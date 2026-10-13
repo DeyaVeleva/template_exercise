@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card shadow-sm p-4 bg-white">
+    <div class="row g-4">
+        <div class="col-md-4">
+           {% if book.image_url %}
+               <img src="{{ book.image_url }}" class="img-fluid rounded w-100" alt="{{ book.title }}" style="height: 450px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default_book.png' %}" class="img-fluid rounded w-100" alt="Default Cover" style="height: 450px; object-fit: cover;">
+            {% endif %}
+
+        </div>
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold">{% block title %}{{ book.title|upper|truncatechars:50 }}{% endblock %}</h1>
+            <p class="badge bg-secondary fs-6">{{ book.genre|lower|capfirst }}</p>
+
+            {% if book.price > 50.00 and not book.genre == 'HORROR' %}
+                <p class="fs-4 fw-bold text-danger">${{ book.price|stringformat:".3f" }} (Premium Quality Item)</p>
+            {% elif book.price < 15.00 or book.genre == 'BARGAIN' %}
+                <p class="fs-4 fw-bold text-success">${{ book.price|stringformat:".3f" }} (Special Discount)</p>
+            {% else %}
+                <p class="fs-4 fw-bold text-primary">${{ book.price|stringformat:".3f" }}</p>
+            {% endif %}
+
+            <hr>
+            <p class="lead">{{ book.description|safe }}</p>
+            <hr>
+            <ul class="list-unstyled text-muted">
+                <li><strong>ISBN:</strong> {{ book.isbn }}</li>
+                <li><strong>Published:</strong> {{ book.publishing_date|date:"Y-m-d" }}</li>
+                <li><strong>Last Updated:</strong> {{ book.updated_at|date:"F d, Y H:i" }}</li>
+            </ul>
+            <a href="{% url 'book_list' %}" class="btn btn-secondary mt-3">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

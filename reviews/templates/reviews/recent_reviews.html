@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="mb-2">{{ page_title }}</h1>
+<p class="text-muted mb-4">{{ reviews|length }} Review{{ reviews|length|pluralize }} submitted by users.</p>
+
+<div class="row">
+    <div class="col-md-8">
+        {% for review in reviews %}
+            {% include 'reviews/_review_card.html' with review=review %}
+        {% empty %}
+            <p class="alert alert-info">No reviews available yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
