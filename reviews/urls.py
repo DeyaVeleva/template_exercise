@@ -1,7 +1,13 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
-
+app_name = 'reviews'
 urlpatterns = [
-    path('', views.recent_reviews, name='recent_reviews'),
-    path('<int:pk>/', views.review_detail, name='review_detail'),
+    path('', views.recent_reviews, name='list'),
+    path('create/', views.review_create, name='create'),
+    path('<int:pk>/', include([
+        path('edit/', views.review_edit, name='edit'),
+        path('delete/', views.review_delete, name='delete'),
+        path('', views.review_details, name='details'),
+
+    ]))
 ]

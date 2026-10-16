@@ -1,0 +1,165 @@
+
+{% extends 'common/base.html' %}
+{% load review_extras %}
+
+{% block extra_css %}
+<style>
+    .review-detail-card {
+        padding: 32px;
+        border: 1px solid #f0e5ff;
+        border-radius: 28px;
+        background: linear-gradient(135deg, #ffffff, #fff8fb);
+        box-shadow: 0 8px 24px rgba(78, 54, 105, 0.08);
+    }
+
+    .review-detail-title {
+        margin-bottom: 10px;
+        color: #40364f;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .review-meta {
+        color: #898194;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+
+    .review-author {
+        color: #8061d9;
+    }
+
+    .review-rating {
+        display: inline-block;
+        padding: 8px 15px;
+        border: 1px solid #ffcadd;
+        border-radius: 50px;
+        background: #ffe6ef;
+        color: #bd4f73;
+        font-size: 0.9rem;
+        font-weight: 800;
+    }
+
+    .review-divider {
+        margin: 24px 0;
+        border-color: #eee4f7;
+        opacity: 1;
+    }
+
+    .review-body {
+        color: #625970;
+        font-size: 1.1rem;
+        line-height: 1.9;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+    }
+
+    .review-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 20px;
+        border: 1px solid #e3d6ff;
+        border-radius: 50px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .review-action-primary {
+        background: #9877e8;
+        border-color: #9877e8;
+        color: white;
+    }
+
+    .review-action-primary:hover {
+        background: #8061d9;
+        border-color: #8061d9;
+        color: white;
+    }
+
+    .review-action-secondary {
+        background: white;
+        color: #8061d9;
+    }
+
+    .review-action-secondary:hover {
+        background: #f1eaff;
+        color: #6849bf;
+    }
+
+    @media (max-width: 576px) {
+        .review-detail-card {
+            padding: 22px;
+            border-radius: 22px;
+        }
+
+        .review-actions {
+            flex-direction: column;
+        }
+
+        .review-action {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="review-detail-card">
+
+        <h1 class="review-detail-title">{{ page_title }}</h1>
+
+        <p class="review-meta">
+            Written by
+            <strong class="review-author">{{ review.author }}</strong>
+            on {{ review.created_at|date:"Y-m-d H:i" }}
+        </p>
+
+        <div class="mb-3">
+            <span class="review-rating">
+                Rating: {{ review.rating|stars }}
+            </span>
+        </div>
+
+        <hr class="review-divider">
+
+        <p class="review-body">{{ review.body }}</p>
+
+        <hr class="review-divider">
+
+        <div class="d-flex flex-wrap gap-2 review-actions">
+            <a
+                href="{% url 'books:detail' review.book.slug %}"
+                class="review-action review-action-primary"
+            >
+                📚 View This Book
+            </a>
+
+            <a
+                href="/"
+                class="review-action review-action-secondary"
+            >
+                🏠 Back to Home
+            </a>
+
+            <a
+                href="{% url 'reviews:edit' review.pk %}"
+                class="review-action review-action-secondary"
+            >
+                ✏️ Edit
+            </a>
+
+            <a
+                href="{% url 'reviews:delete' review.pk %}"
+                class="review-action review-action-secondary"
+            >
+                Delete
+            </a>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

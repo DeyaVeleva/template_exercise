@@ -1,0 +1,45 @@
+
+{% load review_extras %}
+
+<style>
+    .review-rating {
+        display: inline-block;
+        padding: 7px 13px;
+        border: 1px solid #ffcadd;
+        border-radius: 50px;
+        background: #ffe6ef;
+        color: #bd4f73;
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+</style>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <h5 class="card-title fw-bold">
+            {{ review.author }}
+        </h5>
+
+        <h6 class="card-subtitle mb-2 text-muted">
+            Book:
+            <a href="{% url 'books:detail' review.book.slug %}">
+                {{ review.book.title }}
+            </a>
+        </h6>
+
+        <p class="card-text">
+            {{ review.body|truncatechars:100 }}
+        </p>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span class="review-rating">
+                Rating: {{ review.rating|stars }}
+            </span>
+
+            <a href="{% url 'reviews:details' review.pk %}"
+               class="btn btn-sm btn-outline-secondary">
+                Read Full Review
+            </a>
+        </div>
+    </div>
+</div>

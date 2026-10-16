@@ -1,0 +1,392 @@
+{% extends 'common/base.html' %}
+{% load book_extras %}
+{% block extra_css %}
+<style>
+    /* Welcome section */
+    .welcome-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 60px 28px;
+        border: 2px solid #f0e5ff;
+        border-radius: 32px;
+        background: linear-gradient(135deg, #f3eaff 0%, #fff0f5 55%, #fff7df 100%);
+    }
+
+    .welcome-hero::before {
+        content: "✿";
+        position: absolute;
+        top: 10px;
+        right: 35px;
+        color: #d3b9ff;
+        font-size: 90px;
+        transform: rotate(15deg);
+        opacity: 0.7;
+    }
+
+    .welcome-hero::after {
+        content: "✦";
+        position: absolute;
+        bottom: 14px;
+        left: 35px;
+        color: #e9b6ca;
+        font-size: 44px;
+        opacity: 0.8;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-label {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 8px 16px;
+        border: 1px solid #e4d4ff;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.75);
+        color: #8061d9;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .hero-title {
+        margin-bottom: 18px;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -1.5px;
+    }
+
+    .hero-title span {
+        color: #8968df;
+    }
+
+    .hero-description {
+        max-width: 600px;
+        margin: 0 auto;
+        color: #756b87;
+        font-size: 1.12rem;
+        line-height: 1.8;
+    }
+
+    .hero-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 28px;
+        padding: 14px 26px;
+        border: none;
+        border-radius: 50px;
+        background: #9877e8;
+        box-shadow: 0 7px 0 #8061d9;
+        color: white;
+        font-weight: 800;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-button:hover {
+        background: #8061d9;
+        box-shadow: 0 3px 0 #6849bf;
+        color: white;
+        transform: translateY(4px);
+    }
+
+    /* Latest book section */
+    .books-section {
+        margin-top: 58px;
+        margin-bottom: 58px;
+    }
+
+    .section-eyebrow {
+        margin-bottom: 7px;
+        color: #a18acb;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .section-heading {
+        margin-bottom: 8px;
+        font-size: clamp(1.65rem, 3vw, 2.2rem);
+        font-weight: 800;
+    }
+
+    .section-description {
+        color: #8b8299;
+    }
+
+    .books-count {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 50px;
+        background: #e4f7ed;
+        color: #477d63;
+        font-size: 0.85rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    /* Horizontal book card: cover on the left, details on the right */
+    .book-card {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+        min-height: 320px;
+        overflow: hidden;
+        border: 1px solid #f0e8f7;
+        border-radius: 24px;
+        background: white;
+        box-shadow: 0 5px 18px rgba(78, 54, 105, 0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .book-card:hover {
+        box-shadow: 0 14px 28px rgba(78, 54, 105, 0.12);
+        transform: translateY(-4px);
+    }
+
+    .book-card-top {
+        display: flex;
+        flex: 0 0 240px;
+        min-height: 320px;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #f1eaff;
+    }
+
+    .book-cover {
+        display: block;
+        width: 100%;
+        height: 320px;
+        object-fit: contain;
+        padding: 12px;
+    }
+
+    .book-card-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        min-width: 0;
+        padding: 30px;
+    }
+
+    .book-label {
+        align-self: flex-start;
+        margin-bottom: 14px;
+        padding: 6px 12px;
+        border-radius: 50px;
+        background: #fff0f5;
+        color: #bd6688;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .book-title {
+        margin-bottom: 12px;
+        color: #40364f;
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        font-weight: 800;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .book-description {
+        margin-bottom: 24px;
+        color: #898194;
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+
+    .book-details-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: auto;
+        padding: 11px 20px;
+        border: 1px solid #e3d6ff;
+        border-radius: 50px;
+        color: #8061d9;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .book-details-button:hover {
+        background: #9877e8;
+        color: white;
+    }
+
+    /* Empty state */
+    .empty-books {
+        padding: 40px 20px;
+        border: 2px dashed #e5d9f6;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.65);
+        color: #898194;
+        text-align: center;
+    }
+
+    .empty-books-icon {
+        margin-bottom: 12px;
+        font-size: 2.5rem;
+    }
+
+    /* Mobile layout */
+    @media (max-width: 576px) {
+        .welcome-hero {
+            padding: 44px 20px;
+            border-radius: 24px;
+        }
+
+        .welcome-hero::before {
+            top: 0;
+            right: 12px;
+            font-size: 60px;
+        }
+
+        .welcome-hero::after {
+            bottom: 5px;
+            left: 12px;
+            font-size: 30px;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+        }
+
+        .books-section {
+            margin-top: 42px;
+            margin-bottom: 42px;
+        }
+
+        .book-card {
+            flex-direction: column;
+        }
+
+        .book-card-top {
+            flex-basis: auto;
+            min-height: 240px;
+        }
+
+        .book-cover {
+            height: 280px;
+        }
+
+        .book-card-body {
+            padding: 22px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-button,
+        .book-card,
+        .book-details-button {
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome hero -->
+<section class="welcome-hero text-center">
+    <div class="hero-content">
+        <div class="hero-label">
+            ✨ Your little corner of literature
+        </div>
+
+        <h1 class="hero-title">
+            {{ page_title|upper }}<br>
+            <span>one page at a time.</span>
+        </h1>
+
+        <p class="hero-description">
+            {{ welcome_message }}
+        </p>
+
+        <a class="hero-button" href="{% url 'books:list' %}">
+            📚 Explore Books <span aria-hidden="true">→</span>
+        </a>
+    </div>
+</section>
+
+<!-- Latest book -->
+<section class="books-section">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+        <div>
+            <p class="section-eyebrow">Fresh off the bookshelf ✿</p>
+            <h2 class="section-heading">Our Latest Book</h2>
+            <p class="section-description mb-0">
+                Your next favorite story might be right here.
+            </p>
+        </div>
+
+        <span class="books-count">📖 Latest arrival</span>
+    </div>
+
+    <div class="row g-4">
+        {% if latest_book %}
+        <div class="col-12">
+            <article class="book-card">
+                <div class="book-card-top">
+                    {% if latest_book.image_url %}
+                    <img
+                        src="{{ latest_book.image_url }}"
+                        alt="Cover of {{ latest_book.title }}"
+                        class="book-cover"
+                    >
+                    {% else %}
+                    <span aria-hidden="true" style="font-size: 4rem;">📚</span>
+                    {% endif %}
+                </div>
+
+                <div class="book-card-body">
+                    <span class="book-label">A little book magic ✨</span>
+
+                    <h3 class="book-title">
+                        {{ latest_book.title }}
+                    </h3>
+
+                    <p class="book-description">
+                        {{ latest_book.description|default:"No description available."|truncatewords:35 }}
+                    </p>
+
+                    <a
+                        href="{% url 'books:detail' latest_book.slug %}"
+                        class="book-details-button"
+                    >
+                        Discover this book <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </article>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="empty-books">
+                <div class="empty-books-icon">📚</div>
+                <h3>Your bookshelf is waiting!</h3>
+                <p class="mb-0">
+                    No books have been added just yet. Check back soon
+                    for your next reading adventure.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

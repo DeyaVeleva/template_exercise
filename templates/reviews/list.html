@@ -1,0 +1,153 @@
+{% extends 'common/base.html' %}
+
+{% block extra_css %}
+<style>
+    .reviews-page {
+        padding: 20px 0 40px;
+        color: #39334b;
+    }
+
+    .reviews-header {
+        margin-bottom: 30px;
+        padding: 30px;
+        border: 1px solid #f0e5ff;
+        border-radius: 26px;
+        background: linear-gradient(
+            135deg,
+            #f4edff,
+            #fff0f5 65%,
+            #fff8e9
+        );
+        box-shadow: 0 10px 28px rgba(78, 54, 105, 0.06);
+    }
+
+    .reviews-eyebrow {
+        margin-bottom: 10px;
+        color: #9877d5;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .reviews-title {
+        margin-bottom: 12px;
+        color: #39334b;
+        font-family: 'Quicksand', sans-serif;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .reviews-subtitle {
+        margin-bottom: 18px;
+        color: #756d83;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .reviews-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        border: 1px solid #e7d9ff;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.8);
+        color: #8061d9;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .reviews-list {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .reviews-empty {
+        padding: 45px 24px;
+        border: 1px solid #eee5ff;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(78, 54, 105, 0.05);
+        text-align: center;
+    }
+
+    .reviews-empty-icon {
+        margin-bottom: 14px;
+        font-size: 3rem;
+    }
+
+    .reviews-empty h2 {
+        margin-bottom: 10px;
+        color: #514761;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+    }
+
+    .reviews-empty p {
+        margin: 0;
+        color: #837990;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 576px) {
+        .reviews-page {
+            padding-top: 12px;
+        }
+
+        .reviews-header {
+            padding: 24px 20px;
+            border-radius: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container reviews-page">
+
+    <header class="reviews-header">
+        <p class="reviews-eyebrow">
+            ✨ Little thoughts, lovely reads
+        </p>
+
+        <h1 class="reviews-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="reviews-subtitle">
+            Discover what readers think and share the love of books. 💌
+        </p>
+
+        <span class="reviews-count">
+            📚 {{ reviews|length }}
+            Review{{ reviews|length|pluralize }}
+        </span>
+    </header>
+
+    <section class="reviews-list"
+             aria-label="Book reviews">
+
+        {% for review in reviews %}
+            {% include 'reviews/_review_card.html' with review=review %}
+        {% empty %}
+            <div class="reviews-empty">
+                <div class="reviews-empty-icon" aria-hidden="true">
+                    🌷
+                </div>
+
+                <h2>No reviews just yet</h2>
+
+                <p>
+                    This page is waiting for its first little book review.
+                    Check back soon for more reader thoughts!
+                </p>
+            </div>
+        {% endfor %}
+
+    </section>
+</div>
+{% endblock %}
+```

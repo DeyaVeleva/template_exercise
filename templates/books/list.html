@@ -1,0 +1,227 @@
+
+{% extends 'common/base.html' %}
+{% load review_extras %}
+
+{% block extra_css %}
+<style>
+    .books-heading {
+        color: #40364f;
+        font-weight: 800;
+    }
+
+    .books-subtitle {
+        color: #898194;
+        margin-bottom: 28px;
+    }
+
+    .book-list-card {
+        height: 100%;
+        overflow: hidden;
+        border: 1px solid #f0e5ff;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #ffffff, #fff9fc);
+        box-shadow: 0 6px 20px rgba(78, 54, 105, 0.07);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .book-list-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 26px rgba(78, 54, 105, 0.13);
+    }
+
+    .book-cover-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+        padding: 16px;
+        background: #fbf7ff;
+    }
+
+    .book-cover {
+        display: block;
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .book-list-card .card-body {
+        padding: 22px;
+    }
+
+    .book-list-card .card-title {
+        color: #40364f;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .book-description {
+        color: #898194;
+        line-height: 1.7;
+    }
+
+    .book-price {
+        color: #8061d9;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-top: auto;
+        margin-bottom: 12px;
+    }
+
+    .review-rating {
+        display: inline-block;
+        padding: 7px 12px;
+        border: 1px solid #ffcadd;
+        border-radius: 50px;
+        background: #ffe6ef;
+        color: #bd4f73;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .no-rating {
+        color: #898194;
+        font-size: 0.9rem;
+        margin-bottom: 14px;
+    }
+
+    .book-detail-button {
+        display: block;
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #9877e8;
+        border-radius: 50px;
+        background: #9877e8;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background 0.2s ease;
+    }
+
+    .book-detail-button:hover {
+        background: #8061d9;
+        border-color: #8061d9;
+        color: white;
+    }
+
+    .empty-books {
+        padding: 30px;
+        border: 1px dashed #d9c9f5;
+        border-radius: 20px;
+        background: #fbf7ff;
+        color: #625970;
+        text-align: center;
+    }
+
+    @media (max-width: 576px) {
+        .book-cover-wrapper {
+            height: 260px;
+        }
+
+        .book-list-card .card-body {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <h1 class="books-heading mb-2">{{ page_title }}</h1>
+
+    <p class="books-subtitle">
+        📚 Total books available: {{ books|length }}
+    </p>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        <form>
+            <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search for books" value="{{ request.GET.query }}"/>
+                <div class="input-group-append ms-2">
+                    <button class="bnt bnt-outline-secondary">Search</button>
+                </div>
+            </div>
+        </form>
+        {% for book in books %}
+        <div class="col">
+            <div class="card book-list-card">
+
+                <div class="book-cover-wrapper">
+                    {% if book.image_url %}
+                        <img
+                            src="{{ book.image_url }}"
+                            class="book-cover"
+                            alt="Cover of {{ book.title }}"
+                            loading="lazy"
+                        >
+                    {% else %}
+                        <img
+                            src="https://placehold.co/300x400/F5EDFF/8061D9?text=Book+Cover"
+                            class="book-cover"
+                            alt="Default book cover"
+                            loading="lazy"
+                        >
+                    {% endif %}
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">
+                        {{ book.title|truncatechars:40 }}
+                    </h5>
+                    {% if book.avg_rating and book.avg_rating > 4.5 %}
+                        <span class="badge rounded-pill bg-success">⭐ Top Rated</span>
+                    {% endif %}
+
+
+            <p class="no-rating">
+                {{ book.reviews.count }} review{{ book.reviews.count|pluralize }}
+                </p>
+
+                    <p class="book-description">
+                        {{ book.description|default:"No description available."|truncatewords:15 }}
+                    </p>
+
+                    <p class="book-price">
+                        ${% firstof book.price|stringformat:".2f" "0.00" %}
+                    </p>
+
+                    {% if book.avg_rating %}
+                        <div class="mb-3">
+                            <span class="review-rating">
+                                Rating: {{ book.avg_rating|stars }}
+                            </span>
+                        </div>
+                    {% else %}
+                        <p class="no-rating">No ratings yet.</p>
+                    {% endif %}
+
+                    <a
+                        href="{% url 'books:detail' book.slug %}"
+                        class="book-detail-button mt-2"
+                    >
+                        View Details →
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-books">
+                <h4>📚 No books yet</h4>
+                <p class="mb-0">
+                    There are no books available at the moment. Check back soon!
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

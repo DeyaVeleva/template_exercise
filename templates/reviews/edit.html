@@ -1,0 +1,168 @@
+
+{% extends 'common/base.html' %}
+
+{% block extra_css %}
+<style>
+    .create-page {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 12px;
+    }
+
+    .create-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .create-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        margin-bottom: 15px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #f4eaff, #ffe6ef);
+        font-size: 2rem;
+    }
+
+    .create-title {
+        color: #40364f;
+        font-weight: 800;
+    }
+
+    .create-subtitle {
+        color: #898194;
+        margin-top: 10px;
+    }
+
+    .create-card {
+        padding: 30px;
+        border: 1px solid #f0e5ff;
+        border-radius: 24px;
+        background: linear-gradient(145deg, #ffffff, #fff9fc);
+        box-shadow: 0 8px 28px rgba(78, 54, 105, 0.08);
+    }
+
+    .create-card p {
+        margin-bottom: 20px;
+    }
+
+    .create-card label {
+        display: block;
+        margin-bottom: 8px;
+        color: #40364f;
+        font-weight: 700;
+    }
+
+    /* Default styling for form fields */
+    .create-card input:not([type="checkbox"]):not([type="radio"]),
+    .create-card select,
+    .create-card textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #e5d9f5;
+        border-radius: 13px;
+        background: #ffffff;
+        color: #40364f;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+    /* Make only the title textbox narrower */
+    .create-card input[name="title"] {
+        max-width: 350px;
+    }
+
+    .create-card textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Focus effect */
+    .create-card input:focus,
+    .create-card select:focus,
+    .create-card textarea:focus {
+        outline: none;
+        border-color: #9877e8;
+        box-shadow: 0 0 0 4px rgba(152, 119, 232, 0.13);
+    }
+
+    /* Help text */
+    .create-card .helptext {
+        display: block;
+        margin-top: 6px;
+        color: #898194;
+        font-size: 0.85rem;
+    }
+
+    /* Form validation errors */
+    .create-card .errorlist {
+        padding: 10px 25px;
+        border-radius: 10px;
+        background: #fff0f3;
+        color: #b23e61;
+        font-size: 0.9rem;
+    }
+
+    /* Create button */
+    .create-submit {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 50px;
+        background: #9877e8;
+        color: #ffffff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .create-submit:hover {
+        background: #8061d9;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 576px) {
+        .create-card {
+            padding: 22px 18px;
+        }
+
+        .create-card input[name="title"] {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="create-page">
+
+        <header class="create-header">
+            <div class="create-icon">📚</div>
+
+            <h1 class="create-title">Add a New Book</h1>
+
+            <p class="create-subtitle">
+                Add another story to your Book Hub collection.
+            </p>
+        </header>
+
+        <div class="create-card">
+            <form method="post">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit" class="create-submit">
+                    ✨ Save Changes
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

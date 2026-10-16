@@ -1,31 +1,90 @@
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
+from re import search
+
+from django.db.models import QuerySet, Avg
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book
+from .forms import BookBaseForm, BookEditForm, BookCreateForm, BookDeleteForm, SearchBookForm
 
-def landing_page(request):
-    books = Book.objects.all()
+
+def _with_rating(queryset) -> QuerySet:
+    return queryset.annotate(
+        avg_rating=Avg('reviews__rating'),
+    )
+
+
+def landing_page(request: HttpRequest) -> HttpResponse:
+    total_books_count = Book.objects.count()
+    latest_book = Book.objects.order_by('-publishing_date').first()
+
     context = {
-        'page_title': 'Welcome to Our Bookstore',
-        'welcome_message': 'Discover your next great read. Browse our extensive collection of books and read authentic reviews.',
-        'books': books,
-        'current_year': timezone.now().year,
+        'total_books_count': total_books_count,
+        'latest_book': latest_book,
+        'page_title': 'Home',
+        'welcome_message': 'Discover your next favorite story.',
     }
-    return render(request, 'books/index.html', context)
 
-def book_list(request):
-    books = Book.objects.all()
+    return render(request, 'books/landing_page.html', context)
+
+
+def book_list(request: HttpRequest) -> HttpResponse:
+
+    books = _with_rating(Book.objects.all())
+
+    search_form = SearchBookForm(request.GET or None)
+    if search_form.is_valid() and request.GET:
+        books = books.filter(title__icontains=search_form.cleaned_data['query'])
+
     context = {
-        'page_title': 'All Books',
         'books': books,
-        'current_year': timezone.now().year,
+        'page_title': 'Dashboard',
     }
-    return render(request, 'books/book_list.html', context)
+    return render(request, 'books/list.html', context)
 
-def book_detail(request, slug):
-    book = get_object_or_404(Book, slug=slug)
+def book_detail(request:HttpRequest, slug: str):
+    book = get_object_or_404(_with_rating(Book.objects), slug=slug)
     context = {
-        'page_title': book.title,
+
         'book': book,
-        'current_year': timezone.now().year,
+        'page_title': f'{book.title} details',
     }
-    return render(request, 'books/book_details.html', context)
+    return render(request, 'books/details.html', context)
+
+def book_create(request: HttpRequest) -> HttpResponse:
+    form = BookCreateForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        return redirect('books:landing-page')
+
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'books/create.html', context)
+
+def book_edit(request: HttpRequest, slug: str) -> HttpResponse:
+    book = get_object_or_404(Book, slug=slug)
+    form = BookEditForm(request.POST or None, instance=book)
+
+    if form.is_valid():
+        form.save()
+        return redirect('books:landing-page')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'books/edit.html', context)
+
+def book_delete(request: HttpRequest, slug: str) -> HttpResponse:
+    book = get_object_or_404(Book, slug=slug)
+    form = BookDeleteForm( instance=book)
+
+    if request.method == 'POST':
+        book.delete()
+        return redirect('books:landing-page')
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'books/delete.html', context)
